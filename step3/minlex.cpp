@@ -220,7 +220,6 @@ public:
   }
 
   void perm_columns(Sudoku &g, int hb_min) {
-    int at[3] = {0, 1, 2};
     for (auto ai : perm3) {
       for (auto aj : perm3) {
         for (auto ak : perm3) {
