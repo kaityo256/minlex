@@ -4,6 +4,7 @@
 #include <string>
 #include <algorithm>
 #include <sstream>
+#include <vector>
 #include <fstream>
 //------------------------------------------------------------------------
 int perm3[6][3] = {{0, 1, 2}, {0, 2, 1}, {1, 0, 2}, {1, 2, 0}, {2, 0, 1}, {2, 1, 0}};
@@ -54,6 +55,46 @@ public:
       }
     }
     return false;
+  }
+
+  int headline_index(void) {
+    std::vector<int> a(3, 0);
+    for (int i = 0; i < 3; i++) {
+      for (int j = 0; j < 3; j++) {
+        if (data[j + i * 3] != 0) a[i]++;
+      }
+    }
+    std::sort(a.begin(), a.end());
+    int index = 0;
+    for (int i = 0; i < 3; i++) {
+      int t = ((1 << a[i]) - 1) << (2 - i) * 3;
+      index += t;
+    }
+    return index;
+  }
+
+  int headbox_index(bool sort) {
+    int min = 16 * 3 + 4 * 3 + 3;
+    for (int k = 0; k < 3; k++) {
+      std::vector<int> a(3, 0);
+      for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+          if (data[j + i * 3 + k * 9] != 0) a[i]++;
+        }
+      }
+      if (sort) {
+        std::sort(a.begin(), a.end());
+      }
+      int index = 0;
+      for (int i = 0; i < 3; i++) {
+        int t = ((1 << a[i]) - 1) << (2 - i) * 3;
+        index += t;
+      }
+      if (index < min) {
+        min = index;
+      }
+    }
+    return min;
   }
 
   void show(void) {
@@ -178,7 +219,8 @@ public:
     }
   }
 
-  void perm_columns(Sudoku &g) {
+  void perm_columns(Sudoku &g, int hb_min) {
+    int at[3] = {0, 1, 2};
     for (auto ai : perm3) {
       for (auto aj : perm3) {
         for (auto ak : perm3) {
@@ -189,37 +231,73 @@ public:
       }
     }
   }
-  void perm_toprbox(Sudoku &g) {
+  void perm_toprbox(Sudoku &g, int hb_min) {
     for (auto a : perm3) {
       Sudoku g2 = g.perm_toprbox(a);
-      perm_columns(g2);
+      if (g2.headline_index() > hb_min)continue;
+      perm_columns(g2, hb_min);
     }
   }
-  void perm_cbox(Sudoku &g) {
+  void perm_cbox(Sudoku &g, int hb_min) {
     for (auto a : perm3) {
       Sudoku g2 = g.perm_cbox(a);
-      perm_toprbox(g2);
+      if (g2.headbox_index(false) > hb_min)continue;
+      perm_toprbox(g2, hb_min);
     }
   }
+
   std::string search(Sudoku &g) {
     min = max;
+    std::vector<Sudoku> v;
+    std::vector<int> vi;
     for (auto a : perm3) {
       Sudoku g2 = g.perm_rbox(a);
-      perm_cbox(g2);
+      v.push_back(g2);
+      vi.push_back(g2.headbox_index(true));
     }
     Sudoku gt = g.transpose();
     for (auto a : perm3) {
       Sudoku g2 = gt.perm_rbox(a);
-      perm_cbox(g2);
+      v.push_back(g2);
+      vi.push_back(g2.headbox_index(true));
+    }
+    int hb_min = *std::min_element(vi.begin(), vi.end());
+    for (size_t i = 0; i < v.size(); i++) {
+      if (vi[i] > hb_min) continue;
+      perm_cbox(v[i], hb_min);
     }
     return min.str();
   }
 };
 //------------------------------------------------------------------------
 void
+show(std::vector<int> &v) {
+  for (auto i : v) {
+    std::cout << i;
+  }
+  std::cout << std::endl;
+}
+//------------------------------------------------------------------------
+void
 test(void) {
   std::string str = "207005000000340000150000009005000001040000320000016500000002084700000010010580000";
   std::string ans = "000000012000034005006007300001300007053080000080000100010005090200100000700400030";
+  Sudoku g(str.c_str());
+  MinlexSearcher s;
+  g.show();
+  std::string min = s.search(g);
+  std::cout << min << std::endl;
+  if (min == ans) {
+    std::cout << "OK" << std::endl;
+  } else {
+    std::cout << "NG" << std::endl;
+  }
+}
+//------------------------------------------------------------------------
+void
+test2(void) {
+  std::string str = "100000030009004005500360000708902000000000500043000000300020006060085100000001004";
+  std::string ans = "000000001000023000045607000000800030002004100930100000008000200500300900701090008";
   Sudoku g(str.c_str());
   MinlexSearcher s;
   g.show();
