@@ -294,22 +294,6 @@ test(void) {
 }
 //------------------------------------------------------------------------
 void
-test2(void) {
-  std::string str = "100000030009004005500360000708902000000000500043000000300020006060085100000001004";
-  std::string ans = "000000001000023000045607000000800030002004100930100000008000200500300900701090008";
-  Sudoku g(str.c_str());
-  MinlexSearcher s;
-  g.show();
-  std::string min = s.search(g);
-  std::cout << min << std::endl;
-  if (min == ans) {
-    std::cout << "OK" << std::endl;
-  } else {
-    std::cout << "NG" << std::endl;
-  }
-}
-//------------------------------------------------------------------------
-void
 input(const char*filename) {
   std::string line;
   MinlexSearcher s;
