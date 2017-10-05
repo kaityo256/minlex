@@ -39,11 +39,11 @@ mbit left_most_bit(mbit v) {
   ai.i = v;
   if (ai.a[1]) {
     ai.a[0] = 0;
-    ai.a[1] = 1ull << (127 - __builtin_clzl(ai.a[1]));
+    ai.a[1] = 1ull << (63 - __builtin_clzl(ai.a[1]));
     return ai.i;
   }
   if (ai.a[0] == 0) return 0;
-  return 1ull << (127 - __builtin_clzl(ai.a[0]));
+  return 1ull << (63 - __builtin_clzl(ai.a[0]));
 }
 #else
 mbit left_most_bit(mbit v) {
