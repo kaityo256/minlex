@@ -1,6 +1,6 @@
 all: a.out b.out
 CC=g++
-CPPFLAGS= -O3 -std=c++11 -march=native -Wall -Wextra
+CPPFLAGS= -Ofast -std=c++11 -march=native -Wall -Wextra
 
 b.out: minlex.cpp
 	$(CC) $(CPPFLAGS) $< -o $@

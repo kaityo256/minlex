@@ -30,6 +30,22 @@ mysort(mbit v[9]) {
   }
 }
 //------------------------------------------------------------------------
+#if 1
+mbit left_most_bit(mbit v) {
+  union ai {
+    uint64_t a[2];
+    mbit i;
+  } ai;
+  ai.i = v;
+  if (ai.a[1]) {
+    ai.a[0] = 0;
+    ai.a[1] = 1ull << (63 - __builtin_clzl(ai.a[1]));
+    return ai.i;
+  }
+  if (ai.a[0] == 0) return 0;
+  return 1ull << (63 - __builtin_clzl(ai.a[0]));
+}
+#else
 mbit left_most_bit(mbit v) {
   mbit vt = 0;
   while (v) {
@@ -38,6 +54,7 @@ mbit left_most_bit(mbit v) {
   }
   return vt;
 }
+#endif
 //------------------------------------------------------------------------
 void
 show_bit(mbit a) {
