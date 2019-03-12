@@ -1,21 +1,19 @@
-//------------------------------------------------------------------------
-#include <cstdio>
-#include <iostream>
-#include <string>
 #include <algorithm>
-#include <sstream>
-#include <vector>
+#include <cstdio>
 #include <fstream>
 #include <functional>
-//------------------------------------------------------------------------
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+
 typedef unsigned __int128 mbit;
-//------------------------------------------------------------------------
+
 mbit column_bits[9] = {};
 bool hlb_table[8][6] = {{true, true, true, true, true, true}, {true, false, true, false, false, false}, {false, true, false, false, true, false}, {true, true, false, false, false, false}, {false, false, false, true, false, true}, {false, false, true, true, false, false}, {false, false, false, false, true, true}, {true, true, true, true, true, true}};
 int perm3[6][3] = {{0, 1, 2}, {0, 2, 1}, {1, 0, 2}, {1, 2, 0}, {2, 0, 1}, {2, 1, 0}};
-//------------------------------------------------------------------------
-void
-mysort(mbit v[9]) {
+
+void mysort(mbit v[9]) {
   int j;
   for (int i = 1; i < 9; i++) {
     mbit tmp = v[i];
@@ -29,7 +27,7 @@ mysort(mbit v[9]) {
     }
   }
 }
-//------------------------------------------------------------------------
+
 #if 1
 mbit left_most_bit(mbit v) {
   union ai {
@@ -55,9 +53,8 @@ mbit left_most_bit(mbit v) {
   return vt;
 }
 #endif
-//------------------------------------------------------------------------
-void
-show_bit(mbit a) {
+
+void show_bit(mbit a) {
   for (int i = 0; i < 81; i++) {
     if (a & (mbit(1) << (80 - i))) {
       printf("1");
@@ -67,7 +64,7 @@ show_bit(mbit a) {
   }
   printf("\n");
 }
-//------------------------------------------------------------------------
+
 class Sudoku {
 private:
   unsigned char data[81];
@@ -109,7 +106,7 @@ public:
     }
   }
 
-  Sudoku(const char* str) {
+  Sudoku(const char *str) {
     for (int i = 0; i < 81; i++) {
       data[i] = str[i] - '0';
     }
@@ -129,7 +126,7 @@ public:
 
   bool operator==(const Sudoku &rhs) const {
     for (int i = 0; i < 9; i++) {
-      if (rhs.bdata[i] != this->bdata[i])return false;
+      if (rhs.bdata[i] != this->bdata[i]) return false;
     }
     return true;
   }
@@ -174,7 +171,7 @@ public:
     std::vector<int> a(3, 0);
     for (int j = 0; j < 3; j++) {
       for (int k = 0; k < 3; k++) {
-        if (v & (mbit(1) << (80 - k - j * 3)))a[j]++;
+        if (v & (mbit(1) << (80 - k - j * 3))) a[j]++;
       }
     }
     std::sort(a.begin(), a.end());
@@ -196,7 +193,7 @@ public:
       std::vector<int> a(3, 0);
       for (int j = 0; j < 3; j++) {
         for (int k = 0; k < 3; k++) {
-          if (v & (mbit(1) << (80 - k - (j + i * 3) * 3)))a[j]++;
+          if (v & (mbit(1) << (80 - k - (j + i * 3) * 3))) a[j]++;
         }
       }
       if (sort) {
@@ -240,7 +237,6 @@ public:
     return Sudoku(bdata2);
   }
 
-
   Sudoku renumbering(void) {
     mbit bdata2[9];
     for (int i = 0; i < 9; i++) {
@@ -253,7 +249,7 @@ public:
 
   Sudoku perm_restrbox2(int a[3], int pos) {
     mbit bdata2[9] = {};
-    mbit mask = ((mbit(1) << 81) - 1 ) ^ ((mbit(1) << 27) - 1) << (27 * (1 - pos));
+    mbit mask = ((mbit(1) << 81) - 1) ^ ((mbit(1) << 27) - 1) << (27 * (1 - pos));
     const mbit t0 = ((mbit(1) << 9) - 1) << (45 - pos * 27);
     const mbit t1 = ((mbit(1) << 9) - 1) << (36 - pos * 27);
     const mbit t2 = ((mbit(1) << 9) - 1) << (27 - pos * 27);
@@ -350,7 +346,7 @@ public:
       v[0] = (bdata[i] & t0) >> 6;
       v[1] = (bdata[i] & t1) >> 3;
       v[2] = (bdata[i] & t2);
-      bdata2[i]  = v[a[0]] << 6;
+      bdata2[i] = v[a[0]] << 6;
       bdata2[i] |= v[a[1]] << 3;
       bdata2[i] |= v[a[2]];
     }
@@ -366,7 +362,7 @@ public:
       v[0] = bdata[i] & t0;
       v[1] = (bdata[i] & t1) >> 27;
       v[2] = (bdata[i] & t2) >> 54;
-      bdata2[i]  = v[2 - a[2]];
+      bdata2[i] = v[2 - a[2]];
       bdata2[i] |= v[2 - a[1]] << 27;
       bdata2[i] |= v[2 - a[0]] << 54;
     }
@@ -383,19 +379,19 @@ public:
     return Sudoku(data2);
   }
 };
-//------------------------------------------------------------------------
-void
-init_bits(void) {
+
+void init_bits(void) {
   for (int i = 0; i < 9; i++) {
     for (int j = 0; j < 9; j++) {
       column_bits[i] |= (mbit(1 << (8 - i)) << (j * 9));
     }
   }
 }
-//------------------------------------------------------------------------
+
 class MinlexSearcher {
 private:
   Sudoku min, max;
+
 public:
   void perm_restrbox(Sudoku &g) {
     for (auto ai : perm3) {
@@ -413,13 +409,13 @@ public:
     int h1, h2, h3;
     g.headline_bits(h1, h2, h3);
     for (int k = 0; k < 6; k++) {
-      if (!hlb_table[h3][k])continue;
+      if (!hlb_table[h3][k]) continue;
       int *ak = perm3[k];
       for (int j = 0; j < 6; j++) {
-        if (!hlb_table[h2][j])continue;
+        if (!hlb_table[h2][j]) continue;
         int *aj = perm3[j];
         for (int i = 0; i < 6; i++) {
-          if (!hlb_table[h1][i])continue;
+          if (!hlb_table[h1][i]) continue;
           int *ai = perm3[i];
           Sudoku g2 = g.perm_columns(ai, aj, ak).renumbering();
           if (min.head() < g2.head()) continue;
@@ -431,14 +427,14 @@ public:
   void perm_toprbox(Sudoku &g, int hb_min) {
     for (auto a : perm3) {
       Sudoku g2 = g.perm_toprbox(a);
-      if (g2.headline_index() > hb_min)continue;
+      if (g2.headline_index() > hb_min) continue;
       perm_columns(g2);
     }
   }
   void perm_cbox(Sudoku &g, int hb_min) {
     for (auto a : perm3) {
       Sudoku g2 = g.perm_cbox(a);
-      if (g2.headbox_index(false) > hb_min)continue;
+      if (g2.headbox_index(false) > hb_min) continue;
       perm_toprbox(g2, hb_min);
     }
   }
@@ -466,9 +462,8 @@ public:
     return min.str();
   }
 };
-//------------------------------------------------------------------------
-void
-test(void) {
+
+void test(void) {
   std::string str = "207005000000340000150000009005000001040000320000016500000002084700000010010580000";
   std::string ans = "000000012000034005006007300001300007053080000080000100010005090200100000700400030";
   Sudoku g(str.c_str());
@@ -482,9 +477,8 @@ test(void) {
     std::cout << "NG" << std::endl;
   }
 }
-//------------------------------------------------------------------------
-void
-input(const char*filename) {
+
+void input(const char *filename) {
   std::string line;
   MinlexSearcher s;
   std::ifstream ifs(filename);
@@ -493,14 +487,12 @@ input(const char*filename) {
     std::cout << s.search(g) << std::endl;
   }
 }
-//------------------------------------------------------------------------
-int
-main(int argc, char **argv) {
+
+int main(int argc, char **argv) {
   init_bits();
   if (argc > 1) {
     input(argv[1]);
   } else {
-    test();
+    std::cout << "Usage: ./minlex inputfile" << std::endl;
   }
 }
-//------------------------------------------------------------------------
