@@ -28,7 +28,7 @@ void mysort(mbit v[9]) {
   }
 }
 
-#if 1
+#ifndef __WINNT__
 mbit left_most_bit(mbit v) {
   union ai {
     uint64_t a[2];
