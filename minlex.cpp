@@ -109,6 +109,9 @@ public:
   Sudoku(const char *str) {
     for (int i = 0; i < 81; i++) {
       data[i] = str[i] - '0';
+      if (str[i] == '.') {
+        data[i] = 0;
+      }
     }
     array2bit();
   }
@@ -242,7 +245,7 @@ public:
     for (int i = 0; i < 9; i++) {
       bdata2[i] = bdata[i];
     }
-    //std::sort(&bdata2[0], &bdata2[9], std::greater<mbit>());
+    // std::sort(&bdata2[0], &bdata2[9], std::greater<mbit>());
     mysort(bdata2);
     return Sudoku(bdata2);
   }
@@ -398,7 +401,7 @@ public:
       Sudoku g1 = g.perm_restrbox2(ai, 0);
       for (auto aj : perm3) {
         Sudoku g2 = g1.perm_restrbox2(aj, 1).renumbering();
-        //Sudoku g2 = g.perm_restrbox(ai,aj).renumbering();
+        // Sudoku g2 = g.perm_restrbox(ai,aj).renumbering();
         if (g2 < min) {
           min = g2;
         }
